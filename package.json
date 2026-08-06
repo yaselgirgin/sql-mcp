@@ -12,6 +12,7 @@
     "scaffold": "tsx scripts/scaffold-provider.ts"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.1",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "dotenv": "^16.4.0",
     "express": "^5.2.1",

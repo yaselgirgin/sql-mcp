@@ -140,6 +140,30 @@ PG_SSL=false                        # true for SSL connections
 PG_STATEMENT_TIMEOUT=30000          # query timeout in ms (default: 30000)
 ```
 
+#### Option C (optional) — Microsoft Entra (Azure AD) auth
+
+For **Azure Database for PostgreSQL** with Entra-only authentication, where the
+"password" is a short-lived access token rather than a static secret. Set
+`PG_AZURE_AD_AUTH=true` and the server mints a token **on demand per connection**
+via the Azure CLI credential — the equivalent of
+`az account get-access-token --resource https://ossrdbms-aad.database.windows.net` —
+caching and refreshing it automatically. No `PG_PASSWORD`, no stored secret, and no
+external refresh process. SSL is forced on.
+
+```env
+DB_PROVIDER=postgres
+PG_AZURE_AD_AUTH=true
+PG_HOST=myserver.postgres.database.azure.com
+PG_PORT=5432
+PG_DATABASE=mydb
+PG_USER=my_entra_principal          # the AAD user/group mapped as a PostgreSQL role
+```
+
+**Requirements:** an active `az login` in the environment the server runs in, and the
+`PG_USER` principal must be mapped to a PostgreSQL role on the server. This mode is
+opt-in — when `PG_AZURE_AD_AUTH` is unset, connection-string and password auth behave
+exactly as before. Use individual parameters (not `PG_CONNECTION_STRING`) with this mode.
+
 ---
 
 ### HTTP mode (optional)

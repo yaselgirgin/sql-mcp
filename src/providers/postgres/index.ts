@@ -62,6 +62,22 @@ export const postgresProvider: DatabaseProvider = {
 };
 
 export function checkEnv(): void {
+  // Microsoft Entra (Azure AD) auth: the token is fetched dynamically via the Azure
+  // CLI credential, so no PG_PASSWORD / PG_CONNECTION_STRING is needed — only the
+  // host, database, and the Entra principal (PG_USER).
+  if (process.env.PG_AZURE_AD_AUTH === "true") {
+    const required = ["PG_HOST", "PG_USER"];
+    const missing = required.filter((v) => !process.env[v]);
+    if (missing.length > 0) {
+      process.stderr.write(
+        `[postgres] ERROR: PG_AZURE_AD_AUTH=true requires: ${missing.join(", ")}\n` +
+          `[postgres] The access token is acquired via 'az login' (no PG_PASSWORD needed).\n`
+      );
+      process.exit(1);
+    }
+    return;
+  }
+
   if (process.env.PG_CONNECTION_STRING) return;
 
   const required = ["PG_HOST", "PG_USER", "PG_PASSWORD"];
