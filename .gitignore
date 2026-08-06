@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.js.map
+logs/
+
+# Local Claude Code settings (may contain credentials)
+.claude/settings.local.json
