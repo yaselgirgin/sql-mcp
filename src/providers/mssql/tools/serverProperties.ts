@@ -6,7 +6,7 @@ export const serverPropertyTools: Tool[] = [
   {
     name: "get_server_properties",
     description:
-      "Get SQL Server instance properties: version, edition, collation, clustering, and HA configuration",
+      "Get SQL Server instance properties: version, edition, collation, clustering, and authentication configuration",
     inputSchema: {
       type: "object",
       properties: {},
@@ -25,12 +25,10 @@ export async function handleServerPropertyTool(
            @@SERVERNAME AS server_name,
            SERVERPROPERTY('ProductVersion') AS product_version,
            SERVERPROPERTY('ProductLevel') AS product_level,
-           SERVERPROPERTY('ProductUpdateLevel') AS product_update_level,
            SERVERPROPERTY('Edition') AS edition,
            SERVERPROPERTY('EngineEdition') AS engine_edition,
            SERVERPROPERTY('Collation') AS server_collation,
            SERVERPROPERTY('IsClustered') AS is_clustered,
-           SERVERPROPERTY('IsHadrEnabled') AS is_hadr_enabled,
            SERVERPROPERTY('IsIntegratedSecurityOnly') AS windows_auth_only,
            SERVERPROPERTY('ComputerNamePhysicalNetBIOS') AS computer_name,
            @@VERSION AS version_string`
