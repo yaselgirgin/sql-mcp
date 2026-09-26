@@ -69,16 +69,19 @@ export async function handleFullTextTool(
              fc.name AS catalog_name,
              fi.is_enabled,
              fi.change_tracking_state_desc,
-             STRING_AGG(c.name, ', ') WITHIN GROUP (ORDER BY c.name) AS indexed_columns
+             STUFF((
+               SELECT ', ' + c2.name
+               FROM sys.fulltext_index_columns fic2
+               JOIN sys.columns c2
+                 ON fic2.object_id = c2.object_id AND fic2.column_id = c2.column_id
+               WHERE fic2.object_id = fi.object_id
+               ORDER BY c2.name
+               FOR XML PATH(''), TYPE
+             ).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS indexed_columns
            FROM sys.fulltext_indexes fi
            JOIN sys.tables t ON fi.object_id = t.object_id
            JOIN sys.fulltext_catalogs fc ON fi.fulltext_catalog_id = fc.fulltext_catalog_id
-           JOIN sys.fulltext_index_columns fic ON fi.object_id = fic.object_id
-           JOIN sys.columns c
-             ON fic.object_id = c.object_id AND fic.column_id = c.column_id
            WHERE SCHEMA_NAME(t.schema_id) = @schema
-           GROUP BY SCHEMA_NAME(t.schema_id), t.name, fc.name,
-             fi.is_enabled, fi.change_tracking_state_desc
            ORDER BY table_schema, table_name`
         : `SELECT
              SCHEMA_NAME(t.schema_id) AS table_schema,
@@ -86,15 +89,18 @@ export async function handleFullTextTool(
              fc.name AS catalog_name,
              fi.is_enabled,
              fi.change_tracking_state_desc,
-             STRING_AGG(c.name, ', ') WITHIN GROUP (ORDER BY c.name) AS indexed_columns
+             STUFF((
+               SELECT ', ' + c2.name
+               FROM sys.fulltext_index_columns fic2
+               JOIN sys.columns c2
+                 ON fic2.object_id = c2.object_id AND fic2.column_id = c2.column_id
+               WHERE fic2.object_id = fi.object_id
+               ORDER BY c2.name
+               FOR XML PATH(''), TYPE
+             ).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS indexed_columns
            FROM sys.fulltext_indexes fi
            JOIN sys.tables t ON fi.object_id = t.object_id
            JOIN sys.fulltext_catalogs fc ON fi.fulltext_catalog_id = fc.fulltext_catalog_id
-           JOIN sys.fulltext_index_columns fic ON fi.object_id = fic.object_id
-           JOIN sys.columns c
-             ON fic.object_id = c.object_id AND fic.column_id = c.column_id
-           GROUP BY SCHEMA_NAME(t.schema_id), t.name, fc.name,
-             fi.is_enabled, fi.change_tracking_state_desc
            ORDER BY table_schema, table_name`;
       const inputs = schema ? [{ name: "schema", value: schema }] : [];
       const rows = await sqlQuery(query, inputs, database);
