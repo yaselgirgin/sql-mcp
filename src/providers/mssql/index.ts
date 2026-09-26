@@ -9,7 +9,6 @@ import { triggerTools, handleTriggerTool } from "./tools/triggers.js";
 import { constraintTools, handleConstraintTool } from "./tools/constraints.js";
 import { extendedPropertyTools, handleExtendedPropertyTool } from "./tools/extendedProperties.js";
 import { tableStatsTools, handleTableStatsTool } from "./tools/tableStats.js";
-import { sequenceTools, handleSequenceTool } from "./tools/sequences.js";
 import { securityTools, handleSecurityTool } from "./tools/security.js";
 import { serverPropertyTools, handleServerPropertyTool } from "./tools/serverProperties.js";
 import { linkedServerTools, handleLinkedServerTool } from "./tools/linkedServers.js";
@@ -18,7 +17,6 @@ import { partitioningTools, handlePartitioningTool } from "./tools/partitioning.
 import { fullTextTools, handleFullTextTool } from "./tools/fullText.js";
 import { serviceBrokerTools, handleServiceBrokerTool } from "./tools/serviceBroker.js";
 import { userTypeTools, handleUserTypeTool } from "./tools/userTypes.js";
-import { temporalTableTools, handleTemporalTableTool } from "./tools/temporalTables.js";
 import { queryTools, handleQueryTool } from "./tools/query.js";
 import { validateReadOnly, closePools } from "./client.js";
 import type { DatabaseProvider } from "../../core/types.js";
@@ -40,7 +38,6 @@ export const mssqlProvider: DatabaseProvider = {
     ...triggerTools,
     ...constraintTools,
     ...extendedPropertyTools,
-    ...sequenceTools,
     // Stats & sizing
     ...tableStatsTools,
     // Security
@@ -54,7 +51,6 @@ export const mssqlProvider: DatabaseProvider = {
     ...fullTextTools,
     ...serviceBrokerTools,
     ...userTypeTools,
-    ...temporalTableTools,
     // Ad-hoc query
     ...queryTools,
   ],
@@ -80,7 +76,6 @@ export const mssqlProvider: DatabaseProvider = {
     get_trigger_definition: handleTriggerTool,
     get_table_constraints: handleConstraintTool,
     get_extended_properties: handleExtendedPropertyTool,
-    list_sequences: handleSequenceTool,
     // Stats & sizing
     get_table_stats: handleTableStatsTool,
     // Security
@@ -101,7 +96,6 @@ export const mssqlProvider: DatabaseProvider = {
     list_broker_services: handleServiceBrokerTool,
     list_user_types: handleUserTypeTool,
     get_table_type_columns: handleUserTypeTool,
-    list_temporal_tables: handleTemporalTableTool,
     // Ad-hoc query
     execute_query: handleQueryTool,
   },

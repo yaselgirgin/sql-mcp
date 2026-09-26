@@ -79,14 +79,17 @@ export async function handleTriggerTool(
            t.type_desc,
            t.is_disabled,
            t.is_instead_of_trigger,
-           STRING_AGG(te.type_desc, ', ') WITHIN GROUP (ORDER BY te.type_desc) AS events,
+           STUFF((
+             SELECT ', ' + te2.type_desc
+             FROM sys.trigger_events te2
+             WHERE te2.object_id = t.object_id
+             ORDER BY te2.type_desc
+             FOR XML PATH(''), TYPE
+           ).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS events,
            t.create_date,
            t.modify_date
          FROM sys.triggers t
-         JOIN sys.trigger_events te ON t.object_id = te.object_id
          ${where}
-         GROUP BY t.name, t.parent_id, t.type_desc, t.is_disabled,
-           t.is_instead_of_trigger, t.create_date, t.modify_date
          ORDER BY parent_schema, parent_table, trigger_name`,
         inputs,
         database

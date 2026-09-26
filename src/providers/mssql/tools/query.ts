@@ -11,7 +11,7 @@ export const queryTools: Tool[] = [
     description:
       "Execute a read-only SELECT query against the SQL Server. " +
       "Only SELECT statements (and CTEs using WITH) are permitted. " +
-      "Use TOP or FETCH NEXT in your query for large tables to avoid excessive data transfer. " +
+      "Use TOP in your query for large tables to avoid excessive data transfer. " +
       `Results are capped at ${DEFAULT_MAX_ROWS} rows by default.`,
     inputSchema: {
       type: "object",
