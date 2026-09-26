@@ -43,17 +43,22 @@ export async function handleConstraintTool(
          SELECT
            kc.name AS constraint_name,
            kc.type_desc AS constraint_type,
-           STRING_AGG(c.name, ', ') WITHIN GROUP (ORDER BY ic.key_ordinal) AS columns,
+           STUFF((
+             SELECT ', ' + c2.name
+             FROM sys.index_columns ic2
+             JOIN sys.columns c2
+               ON ic2.object_id = c2.object_id AND ic2.column_id = c2.column_id
+             WHERE ic2.object_id = kc.parent_object_id
+               AND ic2.index_id = kc.unique_index_id
+               AND ic2.is_included_column = 0
+             ORDER BY ic2.key_ordinal
+             FOR XML PATH(''), TYPE
+           ).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS columns,
            NULL AS definition
          FROM sys.key_constraints kc
          JOIN sys.tables t ON kc.parent_object_id = t.object_id
          JOIN sys.schemas s ON t.schema_id = s.schema_id
-         JOIN sys.index_columns ic
-           ON kc.parent_object_id = ic.object_id AND kc.unique_index_id = ic.index_id
-         JOIN sys.columns c
-           ON ic.object_id = c.object_id AND ic.column_id = c.column_id
          WHERE s.name = @schema AND t.name = @table
-         GROUP BY kc.name, kc.type_desc
 
          UNION ALL
 
